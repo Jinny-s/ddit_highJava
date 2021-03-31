@@ -60,14 +60,14 @@ public class BoardServiceImpl implements IBoardService{
 	@Override
 	public List<BoardVO> getAllBoardList() {
 		
-		List<BoardVO> memList = new ArrayList<>();
+		List<BoardVO> boardList = new ArrayList<>();
 		
 		try {
-			memList = boardDao.getAllBoardList(smc);
+			boardList = boardDao.getAllBoardList(smc);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return memList;
+		return boardList;
 	}
 
 	@Override
@@ -98,15 +98,15 @@ public class BoardServiceImpl implements IBoardService{
 	@Override
 	public List<BoardVO> getSearchBoard(BoardVO mv) {
 		
-		List<BoardVO> memList = new ArrayList<>();
+		List<BoardVO> boardList = new ArrayList<>();
 		
 		try {
-			memList = boardDao.getSearchBoard(smc, mv);
+			boardList = boardDao.getSearchBoard(smc, mv);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return memList;
+		return boardList;
 	}
 
 }
