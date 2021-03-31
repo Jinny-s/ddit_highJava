@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
+
 import kr.or.ddit.util.JDBCUtil3;
 
 /*
@@ -45,6 +47,12 @@ public class T02_MemberInfoTest {
 	private ResultSet rs;
 	
 	private Scanner scan = new Scanner(System.in); 
+	
+	// Log4j를 이용한 로그를 남기기 위한 로거 생성
+	private static final Logger SQL_LOGGER = Logger.getLogger("log4jexam.sql.Query");
+	private static final Logger PARAM_LOGGER = Logger.getLogger("log4jexam.sql.Parameter");
+	private static final Logger RESULT_LOGGER = Logger.getLogger(T02_MemberInfoTest.class);
+	
 	
 	/**
 	 * 메뉴를 출력하는 메서드
@@ -259,13 +267,23 @@ public class T02_MemberInfoTest {
 			String sql = "insert into mymember (mem_id, mem_name, mem_tel, mem_addr)"
 						+ " values (?, ?, ?, ?)";
 			
+			SQL_LOGGER.debug("쿼리 : " + sql);
+			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, memId);
 			pstmt.setString(2, memName);
 			pstmt.setString(3, memTel);
 			pstmt.setString(4, memAddr);
 			
+			PARAM_LOGGER.debug("파라미터 : ("
+								+ memId + ", "
+								+ memName + ", "
+								+ memTel + ", "
+								+ memAddr + ")");
+			
 			int cnt = pstmt.executeUpdate();
+			
+			RESULT_LOGGER.warn("결과 : " + cnt);
 			
 			if(cnt > 0) {
 				System.out.println(memId + " 회원 추가 작업 성공");
