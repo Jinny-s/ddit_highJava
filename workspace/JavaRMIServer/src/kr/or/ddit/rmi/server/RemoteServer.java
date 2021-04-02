@@ -1,6 +1,10 @@
 package kr.or.ddit.rmi.server;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
@@ -16,6 +20,29 @@ public class RemoteServer extends UnicastRemoteObject implements RemoteInterface
 
 	protected RemoteServer() throws RemoteException {
 		super();
+	}
+	
+	public static void main(String[] args) {
+		try {
+			// 구현한 RMI용 객체를 클라이언트에서 사용할 수 있도록 RMI서버에 등록한다.
+			
+			// 1. RMI용 인터페이스를 구현한 객체 생성
+			RemoteInterface inf = new RemoteServer();
+			
+			// 2. 구현한 객체를 클라이언트에서 찾을 수 있도록 Registry객체를 생성해서 등록한다.
+			
+			// 포트 번호를 지정하여 Registry객체 생성(기본포트:1099)
+			Registry reg = LocateRegistry.createRegistry(8888);
+			
+			// Registry 서버에 제공하고자 하는 객체 등록
+			// 형식) Registry객체변수.rebind("객체의 Alias", 객체);
+			reg.rebind("server", inf);
+			
+			System.out.println("서버가 준비되었습니다.");
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -47,7 +74,29 @@ public class RemoteServer extends UnicastRemoteObject implements RemoteInterface
 	}
 	
 	@Override
-	public void serFiles(FileInfoVO[] fInfo) throws RemoteException {
+	public void setFiles(FileInfoVO[] fInfo) throws RemoteException {
+		FileOutputStream fos = null;
 		
+		String dir = "d:/C_Lib/"; // 파일이 저장될 폴더 지정
+		
+		System.out.println("파일 저장 시작...");
+		
+		for(FileInfoVO fvo : fInfo) {
+			try {
+				fos = new FileOutputStream(dir + fvo.getFileName());
+				
+				// 클라이언트에서 전달한 파일데이터(byte[])를 서버측에 저장한다.
+				fos.write(fvo.getFileData());
+			} catch (IOException e){
+			 	e.printStackTrace();
+			} finally {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		System.out.println("파일 저장 완료...");
 	}
 }
